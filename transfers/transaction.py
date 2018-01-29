@@ -3,21 +3,22 @@
 __author__ = 'Borja Gete'
 __email__ = 'borjagete90@outlook.es'
 
+import datetime
 class Transaction:
 
     def __init__(self,id_player,id_date_buy,age,avg,pos,price,type_buy,salary=None,date_buy=None):
-        self._id_player = id_player
-        self._id_date_buy = id_date_buy
-        self.age = age
-        self.average = avg
+        self._id_player = int(id_player)
+        self._id_date_buy = int(id_date_buy)
+        self.age = int(age)
+        self.average = int(avg)
         self.position = pos
-        self.price = price
-        self.salary = salary
+        self.price = int(price.replace('.',''))
+        self.salary = int(salary.replace('.',''))
         self.type_buy = type_buy
         self.date_buy = date_buy
 
     def __str__(self):
-        return 'Id: {} {} de {} años, con {} de media\nVendido en {} por {}€, cobrando {}€ en la fecha {}'.format(
+        return 'Id: {} {} de {} años, con {} de media\nVendido en {} por {}€, cobrando {}€ en la fecha {},{}'.format(
             self._id_player
             , self.position
             , self.age
@@ -25,6 +26,7 @@ class Transaction:
             , self.type_buy
             , self.price
             , self.salary
+            , self.date_buy
             , self._id_date_buy
         )
 

@@ -6,7 +6,9 @@ Need an account for the game
 ## Installing
 
 Install the libraries:
+
 `pip install beautifulsoup4`
+
 `pip install requests`
 
 ## Deployment
