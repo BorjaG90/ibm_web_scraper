@@ -9,6 +9,7 @@ import datetime
 from pymongo import MongoClient
 
 reg_month = '(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)'
+reg_day = '(Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo)'
 reg_date_full = '(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]|(?:Jan|Mar|May|Jul|Aug|Oct|Dec)))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2]|(?:Jan|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)(?:0?2|(?:Feb))\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9]|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep))|(?:1[0-2]|(?:Oct|Nov|Dec)))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})'
 def analyze_similar_buys(html_str):
     table_str = html_str[html_str.find('<tbody class="pijama">')+22:html_str.find('</tbody>')-8]
@@ -32,7 +33,7 @@ def analyze_similar_buys(html_str):
 
         #print('Id: '+ id_player + ' Jugador: ' + name+ ' ' + pos +  ' de ' + age + ' años, con ' + avg + ' de media')
         #print('Vendido en ' + type_buy + ' por ' + price + '€, cobrando ' + salary + '€ en la fecha '+ id_date_buy +'\n')
-
+        
         transactions.append(transaction.Transaction(id_player,id_date_buy,age,avg,pos,price,type_buy,salary,date_buy))
     return transactions
 # Transforma el formato de fechas a un formato estándar
@@ -66,6 +67,20 @@ def date_translation(html_str):
             month = 11
         elif(month_str == 'Dic'):
             month = 12
+        if(month < datetime.datetime.now().month):
+            year = datetime.datetime.now().year -1
+        else:
+            year = datetime.datetime.now().year
+        return '{}/{}/{}'.format(str(day).zfill(2),str(month).zfill(2),year)
+    elif(re.search(reg_day,html_str) is not None):
+        day = re.search('\d{1,2}',html_str).group(0).replace(' ','')
+        if(int(day) < datetime.datetime.now().day):
+            if(datetime.datetime.now().month == 1):
+                month = 12
+            else:
+                month = datetime.datetime.now().month -1
+        else:
+            month = datetime.datetime.now().month
         if(month < datetime.datetime.now().month):
             year = datetime.datetime.now().year -1
         else:
