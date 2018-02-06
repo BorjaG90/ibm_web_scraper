@@ -4,9 +4,33 @@ __author__ = 'Borja Gete'
 __email__ = 'borjagete90@outlook.es'
 
 import datetime
-class Transaction:
 
-    def __init__(self,id_player,id_date_buy,age,avg,pos,price,type_buy,salary=None,date_buy=None):
+class Transaction:
+    """Represent a transaction of a player from one team to other team in an 
+    especific date.
+    
+    Keyword arguments:
+    id_player -- id of the player.
+    id_date_buy -- date of transaction in numeric format.
+    age -- age of the player at the moment of the transaction.
+    avg -- average points at the moment of the transaction.
+    pos -- position of the player.
+    price -- cost of the player.
+    salary -- salary of the player.
+    type_buy -- [Subasta/Compra directa/Traspaso pactado/Clausulazo]
+    date_buy -- date of transaction in date format.
+    """
+    def __init__(self, 
+        id_player, 
+        id_date_buy, 
+        age, 
+        avg, 
+        pos, 
+        price, 
+        type_buy, 
+        salary=None, 
+        date_buy=None
+    ):
         self._id_player = int(id_player)
         self._id_date_buy = int(id_date_buy)
         self.age = int(age)
@@ -18,7 +42,7 @@ class Transaction:
         self.date_buy = date_buy
 
     def __str__(self):
-        return 'Id: {} {} de {} años, con {} de media\nVendido en {} por {}€, cobrando {}€ en la fecha {},{}'.format(
+        return 'Id: {} {} de {} años, con {} de media\n\tVendido en {} por {}€, cobrando {}€ en la fecha {},{}'.format(
             self._id_player
             , self.position
             , self.age
@@ -31,6 +55,7 @@ class Transaction:
         )
 
     def to_db_collection(self):
+        """Return the data of the transaction in a legible MongoDB format."""
         return {
             "_id_player": self._id_player,
             "_id_date_buy": self._id_date_buy,

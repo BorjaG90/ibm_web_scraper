@@ -3,17 +3,26 @@
 __author__ = 'Borja Gete'
 __email__ = 'borjagete90@outlook.es'
 
-import transaction
+from transfers.transaction import *
+
 import re
 import datetime
-from pymongo import MongoClient
 
 reg_month = '(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)'
 reg_day = '(Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo)'
 reg_date_full = '(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]|(?:Jan|Mar|May|Jul|Aug|Oct|Dec)))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2]|(?:Jan|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)(?:0?2|(?:Feb))\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9]|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep))|(?:1[0-2]|(?:Oct|Nov|Dec)))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})'
+
+
 def analyze_similar_buys(html_str):
+    """Analyze the html page of Similar Buys of a player.
+    
+    Keyword arguments:
+    html_str -- Full text of the webpage of similar buys in string format.
+        The web page direction is similar at :
+        /jugador_compras_similares.php?id_jugador=xxxxxxx
+    """
     table_str = html_str[html_str.find('<tbody class="pijama">')+22:html_str.find('</tbody>')-8]
-    players = table_str.replace('\n','').replace('\t','').split('<tr')
+    players = table_str.replace('\n', '').replace('\t', '').split('<tr')
     transactions = []
     for player_str in players[1:]:
         data_player = player_str.split('<td')
@@ -34,11 +43,29 @@ def analyze_similar_buys(html_str):
         #print('Id: '+ id_player + ' Jugador: ' + name+ ' ' + pos +  ' de ' + age + ' años, con ' + avg + ' de media')
         #print('Vendido en ' + type_buy + ' por ' + price + '€, cobrando ' + salary + '€ en la fecha '+ id_date_buy +'\n')
         
-        transactions.append(transaction.Transaction(id_player,id_date_buy,age,avg,pos,price,type_buy,salary,date_buy))
+        transactions.append(
+            Transaction(
+                id_player, 
+                id_date_buy, 
+                age, 
+                avg, 
+                pos, 
+                price, 
+                type_buy, 
+                salary, 
+                date_buy
+            )
+        )
     return transactions
-# Transforma el formato de fechas a un formato estándar
+
+
 def date_translation(html_str):
-    # Quitamos la hora
+    """Transform short date format to standard date format.
+
+    Keyword arguments:
+    html_str -- String who represents a date in diverse formats.
+    """
+    # Remove the hour
     html_str = html_str.replace(re.search('\s\d{1,2}:\d{1,2}',html_str).group(0),'')
     if(re.search(reg_month,html_str) is not None):
         day = re.search('\d{1,2}',html_str).group(0).replace(' ','')
@@ -89,22 +116,3 @@ def date_translation(html_str):
     else:
         #print(html_str)
         return html_str
-
-
-#Main
-mongoClient = MongoClient('localhost',27017)
-db = mongoClient.ibm_web_scraper
-
-path = input("Introduce la ruta del fichero html: ")
-fichero = open(path,'r', encoding="utf8")
-
-html_str = fichero.read()
-ts = analyze_similar_buys(html_str)
-for t in ts:
-    print(t)
-    #print(db.transactions.find({"_id_player":t._id_player},{"_id_date_buy":t._id_date_buy}).count())
-    if(db.transactions.find({"_id_player":t._id_player},{"_id_date_buy":t._id_date_buy}).count() == 0):
-        db.transactions.insert(t.to_db_collection())
-    else:
-        print("Ya existe")
-fichero.close
