@@ -6,17 +6,17 @@ __email__ = 'borjagete90@outlook.es'
 import os
 
 from pymongo import MongoClient
-from transfers.readFich import *
+from transfers.readWebPage import *
 
 
 def option_one():
-    """Option of analyze similar buys of a player"""
+    """Option of web scrap similar buys of a player"""
     path = input("Introduce la ruta del fichero html: ")
     fichero = open(path,'r', encoding="utf8")
 
     html_str = fichero.read()
 
-    ts = analyze_similar_buys(html_str)
+    ts = analyze_webpage(html_str)
     for t in ts:
         print("\t{}".format(t))
         if(
@@ -39,7 +39,7 @@ db = mongoClient.ibm_web_scraper
 while True:
     os.system('cls')
     print("\n**IBM Web Scraper**")
-    opcion = input("\nIntroduce una opción:\n[1] Analizar Compras Similares\n\n[0] Salir del programa\n\n> ")
+    opcion = input("\nIntroduce una opción:\n[1] Obtener Compras Similares\n\n[0] Salir del programa\n\n> ")
 
     if opcion == "1":
         option_one()

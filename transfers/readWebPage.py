@@ -13,9 +13,11 @@ reg_day = '(Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo)'
 reg_date_full = '(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]|(?:Jan|Mar|May|Jul|Aug|Oct|Dec)))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2]|(?:Jan|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)(?:0?2|(?:Feb))\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9]|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep))|(?:1[0-2]|(?:Oct|Nov|Dec)))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})'
 
 
-def analyze_similar_buys(html_str):
+def analyze_webpage(html_str):
     """Analyze the html page of Similar Buys of a player.
     
+    Return an array of transactions
+
     Keyword arguments:
     html_str -- Full text of the webpage of similar buys in string format.
         The web page direction is similar at :
