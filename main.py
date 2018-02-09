@@ -7,7 +7,7 @@ import os
 
 from pymongo import MongoClient
 from transfers.readWebPage import *
-
+from market.readWebPage import *
 
 def option_one():
     """Option of web scrap similar buys of a player"""
@@ -16,7 +16,7 @@ def option_one():
 
     html_str = fichero.read()
 
-    ts = analyze_webpage(html_str)
+    ts = analyze_similar_buys(html_str)
     for t in ts:
         print("\t{}".format(t))
         if(
@@ -30,6 +30,18 @@ def option_one():
             print("\t-Ya existe-")
     fichero.close
 
+def option_two():
+    """Option of web scrap the auctions on the actual market"""
+    path = input("Introduce la ruta del fichero html: ")
+    fichero = open(path,'r', encoding="utf8")
+
+    html_str = fichero.read()
+    aus = analyze_market(html_str)
+    db.market.delete_many({}) 
+    for a in aus:
+        print("\t{}".format(a))
+        db.market.insert(a.to_db_collection())
+    fichero.close
 
 #Main
 mongoClient = MongoClient('localhost',27017)
@@ -39,14 +51,13 @@ db = mongoClient.ibm_web_scraper
 while True:
     os.system('cls')
     print("\n**IBM Web Scraper**")
-    opcion = input("\nIntroduce una opción:\n[1] Obtener Compras Similares\n\n[0] Salir del programa\n\n> ")
+    opcion = input("\nIntroduce una opción:\n[1] Obtener Compras Similares\n[2] Obtener Mercado\n\n[0] Salir del programa\n\n> ")
 
     if opcion == "1":
         option_one()
 
     elif opcion == "2":
-        #agregar_plato()
-        pass
+        option_two()
 
     elif opcion == "3":
         #mostrar_menu()
