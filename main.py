@@ -8,6 +8,7 @@ import os
 from pymongo import MongoClient
 from transfers.readWebPage import *
 from market.readWebPage import *
+from statistics.readWebPage import *
 
 def option_one():
     """Option of web scrap similar buys of a player"""
@@ -43,6 +44,19 @@ def option_two():
         db.market.insert(a.to_db_collection())
     fichero.close
 
+def option_three():
+    """Option of web scrap the statistics lines of a game"""
+    path = input("Introduce la ruta del fichero html: ")
+    fichero = open(path,'r', encoding="utf8")
+
+    html_str = fichero.read()
+    aus = analyze_game(html_str)
+    #db.market.delete_many({}) 
+    #for a in aus:
+    #    print("\t{}".format(a))
+    #    db.market.insert(a.to_db_collection())
+    fichero.close
+
 #Main
 mongoClient = MongoClient('localhost',27017)
 db = mongoClient.ibm_web_scraper
@@ -51,7 +65,7 @@ db = mongoClient.ibm_web_scraper
 while True:
     os.system('cls')
     print("\n**IBM Web Scraper**")
-    opcion = input("\nIntroduce una opción:\n[1] Obtener Compras Similares\n[2] Obtener Mercado\n\n[0] Salir del programa\n\n> ")
+    opcion = input("\nIntroduce una opción:\n[1] Obtener Compras Similares\n[2] Obtener Mercado\n[3] Analizar Partido \n\n[0] Salir del programa\n\n> ")
 
     if opcion == "1":
         option_one()
@@ -60,7 +74,7 @@ while True:
         option_two()
 
     elif opcion == "3":
-        #mostrar_menu()
+        option_three()
         pass
 
     elif opcion == "0":
