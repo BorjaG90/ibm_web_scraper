@@ -114,10 +114,10 @@ def analyze_market_web(params):
         db.market.insert_one(a.to_db_collection())
     
     #Analyze similars
-    for a in aus:
-        analyze_player_similars(a._id, False, None)
+    # for a in aus:
+    #     analyze_player_similars(a._id, False, None)
 
-def analyze_teams_web(division, group):
+def analyze_juniors_web(division, group):
     standings_url = url + 'liga.php?temporada=' + str(season) + '&division=' + str(division) + '&grupo=' + str(group)
     print(' >{ ' + standings_url + ' }')
     r = session.get(standings_url)
@@ -145,8 +145,39 @@ def analyze_teams_web(division, group):
             else:
                 #print("\t-Ya existe-")
                 db.juniors.replace_one({"_id":j._id},j.to_db_collection())
-        for j in juniors:
-            analyze_player_similars(j._id, False, None)
+        # for j in juniors:
+        #     analyze_player_similars(j._id, False, None)
+
+def analyze_roster_web(division, group):
+    standings_url = url + 'liga.php?temporada=' + str(season) + '&division=' + str(division) + '&grupo=' + str(group)
+    print(' >{ ' + standings_url + ' }')
+    r = session.get(standings_url)
+    load_status=0
+    while load_status!=200:
+        load_status = r.status_code
+    #print("\n#[Clasificacion Cargado]#")
+    
+    #Obtain teams of the standing
+    teams_url = analyze_standings(r.content)
+
+    for team_url in teams_url:
+        roster_url = url + 'plantilla.php?id_equipo=' + team_url
+        print('  - Equipo ' + team_url +' :[ ' + roster_url + ' ]')
+        
+        r = session.get(roster_url)
+        load_status=0
+        while load_status!=200:
+            load_status = r.status_code
+        #print("\t##[Cantera Cargada]##")
+        roster = analyze_seniors(r.content)
+        for p in roster:
+            if(db.seniors.find({"_id":p._id}).count() == 0):
+                db.seniors.insert_one(p.to_db_collection())
+            else:
+                #print("\t-Ya existe-")
+                db.seniors.replace_one({"_id":p._id},p.to_db_collection())
+        for p in roster:
+            analyze_player_similars(p._id, False, None)
 
 #-----Menu----
 def option_one():
@@ -191,14 +222,14 @@ def option_two():
     division = 1
     group = 1
     print('\t\t{Division 1}')
-    analyze_teams_web(division, group)
+    analyze_juniors_web(division, group)
 
     ## 2nd division
     login(auth)
     division = 2
     print('\t\t{Division 2}')
     for group in range(1,5):
-        analyze_teams_web(division, group)
+        analyze_juniors_web(division, group)
     
     ## 3rd division
     
@@ -206,9 +237,41 @@ def option_two():
     print('\t\t{Division 3}')
     for group in range(1,17):
         login(auth)
-        analyze_teams_web(division, group)
+        analyze_juniors_web(division, group)
 
 def option_three():
+    """Option of web scrap roster from division 1 & 2 teams"""
+    #Login
+    login(auth)
+
+    #Analyze divisions
+    ## 1st division
+    division = 1
+    group = 1
+    print('\t\t{Division 1}')
+    analyze_roster_web(division, group)
+
+    ## 2nd division
+    login(auth)
+    division = 2
+    print('\t\t{Division 2}')
+    for group in range(1,5):
+        analyze_roster_web(division, group)
+
+def option_four():
+    """Option of web scrap juniors from division 4 teams"""
+    #Login
+    login(auth)
+
+    #Analyze divisions
+    ## 4th division
+    division = 4
+    print('\t\t{Division 4}')
+    for group in range(1,65):
+        login(auth)
+        analyze_juniors_web(division, group)
+
+def option_five():
     """Option of web scrap the statistics lines of a game"""
     path = input("Introduce la ruta del fichero html: ")
     fichero = open(path,'r', encoding="utf8")
@@ -253,7 +316,11 @@ session = requests.session()
 while True:
     os.system('cls')
     print("\n**IBM Web Scraper**")
-    opcion = input("\nIntroduce una opción:\n[1] Obtener Mercado\n[2] Obtener Cantera\n[3] Analizar Partido \n\n[0] Salir del programa\n\n> ")
+    print("\n[1] Obtener Mercado\n[2] Obtener Cantera")
+    print("[3] Obtener Plantillas (Division 1 & 2)")
+    print("[4] Obtener Cantera (Division 4)")
+    print("\n[0] Salir del programa\n")
+    opcion = input("Introduce una opción: > ")
 
     if opcion == "1":
         option_one()
@@ -263,7 +330,9 @@ while True:
 
     elif opcion == "3":
         option_three()
-        pass
+
+    elif opcion == "4":
+        option_four()
 
     elif opcion == "0":
         print("Cerrando programa!")
