@@ -277,8 +277,8 @@ def option_four():
         login(auth)
         analyze_juniors_web(division, group)
 
-def option_four():
-    """Option of web scrap juniors from division 4 teams"""
+def option_five():
+    """Option of web scrap seniors from division 4 teams"""
     #Login
     login(auth)
 
