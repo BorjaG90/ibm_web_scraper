@@ -373,7 +373,7 @@ while True:
     print("\n[1] Obtener Mercado\n[2] Obtener Cantera(Division 1,2 & 3)")
     print("[3] Obtener Plantillas (Division 1, 2 & 3)")
     print("[4] Obtener Cantera (Division 4)")
-    print("[5] Obtener Cantera (Division 4)")
+    print("[5] Obtener Plantilla (Division 4)")
     print("[6] Obtener transacciones")
     print("\n[0] Salir del programa\n")
     opcion = input("Introduce una opción: > ")
