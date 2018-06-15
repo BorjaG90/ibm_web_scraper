@@ -26,11 +26,15 @@ class Auction:
 
     def to_db_collection(self):
         """Return the data of the auction in a legible MongoDB format."""
+        position = self.position.replace("SF","A").replace("PF","AP").replace("C","P").replace("PG","B").replace("SG","E")
         return {
             "_id":self._id,
-            "position":self.position,
+            "position":position,
             "age":self.age,
             "average":self.average,
             "date_acution":self.date_auction,
             "offer":self.offer
         }
+
+    def pos_treatment(position):
+        return position.replace("SF","A").replace("PF","AP").replace("C","P").replace("PG","B").replace("SG","E")

@@ -73,7 +73,7 @@ def analyze_player_similars(id_player, log, auth):
         login(auth)
 
     transactions_url = url + 'jugador_compras_similares.php?id_jugador=' + str(id_player)
-    
+    print(transactions_url)
     r = session.get(transactions_url)
     load_status=0
     while load_status!=200:
@@ -114,8 +114,8 @@ def analyze_market_web(params):
         db.market.insert_one(a.to_db_collection())
     
     #Analyze similars
-    # for a in aus:
-    #     analyze_player_similars(a._id, False, None)
+    for a in aus:
+        analyze_player_similars(a._id, False, None)
 
 def analyze_juniors_web(division, group):
     standings_url = url + 'liga.php?temporada=' + str(season) + '&division=' + str(division) + '&grupo=' + str(group)
@@ -176,8 +176,8 @@ def analyze_roster_web(division, group):
             else:
                 #print("\t-Ya existe-")
                 db.seniors.replace_one({"_id":p._id},p.to_db_collection())
-        for p in roster:
-            analyze_player_similars(p._id, False, None)
+        # for p in roster:
+        #     analyze_player_similars(p._id, False, None)
 
 #-----Menu----
 def option_one():
@@ -232,7 +232,6 @@ def option_two():
         analyze_juniors_web(division, group)
     
     ## 3rd division
-    
     division = 3
     print('\t\t{Division 3}')
     for group in range(1,17):
@@ -240,7 +239,7 @@ def option_two():
         analyze_juniors_web(division, group)
 
 def option_three():
-    """Option of web scrap roster from division 1 & 2 teams"""
+    """Option of web scrap roster from division 1, 2 & 3 teams"""
     #Login
     login(auth)
 
@@ -257,6 +256,13 @@ def option_three():
     print('\t\t{Division 2}')
     for group in range(1,5):
         analyze_roster_web(division, group)
+    
+    ## 3rd division
+    division = 3
+    print('\t\t{Division 3}')
+    for group in range(1,17):
+        login(auth)
+        analyze_roster_web(division, group)
 
 def option_four():
     """Option of web scrap juniors from division 4 teams"""
@@ -271,7 +277,55 @@ def option_four():
         login(auth)
         analyze_juniors_web(division, group)
 
-def option_five():
+def option_four():
+    """Option of web scrap juniors from division 4 teams"""
+    #Login
+    login(auth)
+
+    #Analyze divisions
+    ## 4th division
+    division = 4
+    print('\t\t{Division 4}')
+    for group in range(1,65):
+        login(auth)
+        analyze_roster_web(division, group)
+
+def option_six():
+    """Option of analize a single example of each combination and obtain his similars transactions""" 
+    min_j_age = db.juniors.find().sort([("age", 1)]).limit(1)[0]['age']
+    max_j_age = db.juniors.find().sort([("age", -1)]).limit(1)[0]['age']
+    min_j_avg = db.juniors.find().sort([("average", 1)]).limit(1)[0]['average']
+    max_j_avg = db.juniors.find().sort([("average", -1)]).limit(1)[0]['average']
+    min_s_age = db.seniors.find().sort([("age", 1)]).limit(1)[0]['age']
+    max_s_age = db.seniors.find().sort([("age", -1)]).limit(1)[0]['age']
+    min_s_avg = db.seniors.find().sort([("average", 1)]).limit(1)[0]['average']
+    max_s_avg = db.seniors.find().sort([("average", -1)]).limit(1)[0]['average']
+    positions = ['B','E','A','AP','P']
+    examples = []
+    # Obtain a example of every combination of players
+    for i in range(0,len(positions)):
+        login(auth)
+        position = positions[i]
+        for j in range(min_j_age, max_j_age +1):
+            print("J Age: " + str(j) + " " + position)
+            for k in range(min_j_avg, max_j_avg +1):
+                elements = db.juniors.find({"position":position,"age":j,"average":k}).limit(3)
+                for element in elements:
+                    if(element!=None):
+                        examples.append(element)
+        for j in range(min_s_age, max_s_age +1):
+            print("S Age: " + str(j) + " " + position)
+            for k in range(min_s_avg, max_s_avg +1):
+                element = db.seniors.find({"position":position,"age":j,"average":k}).limit(3)
+                for element in elements:
+                    if(element!=None):
+                        examples.append(element)
+
+    # Obtain similar buys
+    for player in examples:
+        analyze_player_similars(player['_id'], False, None)
+    
+def option_number():
     """Option of web scrap the statistics lines of a game"""
     path = input("Introduce la ruta del fichero html: ")
     fichero = open(path,'r', encoding="utf8")
@@ -316,9 +370,11 @@ session = requests.session()
 while True:
     os.system('cls')
     print("\n**IBM Web Scraper**")
-    print("\n[1] Obtener Mercado\n[2] Obtener Cantera")
-    print("[3] Obtener Plantillas (Division 1 & 2)")
+    print("\n[1] Obtener Mercado\n[2] Obtener Cantera(Division 1,2 & 3)")
+    print("[3] Obtener Plantillas (Division 1, 2 & 3)")
     print("[4] Obtener Cantera (Division 4)")
+    print("[5] Obtener Cantera (Division 4)")
+    print("[6] Obtener transacciones")
     print("\n[0] Salir del programa\n")
     opcion = input("Introduce una opción: > ")
 
@@ -333,6 +389,12 @@ while True:
 
     elif opcion == "4":
         option_four()
+
+    elif opcion == "5":
+        option_five()
+    
+    elif opcion == "6":
+        option_six()
 
     elif opcion == "0":
         print("Cerrando programa!")

@@ -53,15 +53,19 @@ class Transaction:
             , self.date_buy
             , self._id_date_buy
         )
+    
+    def pos_treatment(position):
+        return position.replace("SF","A").replace("PF","AP").replace("C","P").replace("PG","B").replace("SG","E")
 
     def to_db_collection(self):
         """Return the data of the transaction in a legible MongoDB format."""
+        position = self.position.replace("SF","A").replace("PF","AP").replace("C","P").replace("PG","B").replace("SG","E")
         return {
             "_id_player": self._id_player,
             "_id_date_buy": self._id_date_buy,
             "age": self.age,
             "average": self.average,
-            "position": self.position,
+            "position": position,
             "price": self.price,
             "salary": self.salary,
             "type_buy": self.type_buy,

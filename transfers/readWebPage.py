@@ -23,44 +23,52 @@ def analyze_similar_buys(html_content):
         The web page direction is similar at :
         /jugador_compras_similares.php?id_jugador=xxxxxxx
     """
+    # soup = BeautifulSoup(html_content, 'html.parser')
+    # final = soup.find('div',{'class':'texto final'})
+    # transactions = []
+    # players_str = soup.find_all('table', {'id':'pagetabla'})[0].find_all('tr')
+    # players_str.pop(0) 
+
     soup = BeautifulSoup(html_content, 'html.parser')
-    final = soup.find('div',{'class':'texto final'})
     transactions = []
-    players_str = soup.find_all('table', {'id':'pagetabla'})[0].find_all('tr')
-    players_str.pop(0) #Deleted THs elements
+    final = soup.find('div',{'class':'texto final'})
+    mensaje = soup.find('div',{"id": "menserror"}) #Playing a game
+    if(final!=None and mensaje == None):  #If there is auctions with that filter
+        players_str = soup.find_all('table', {"id": "pagetabla"})[0].find_all('tr')
+        players_str.pop(0)#Deleted THs elements
 
-    for player_str in players_str:
-        player_soup = BeautifulSoup(str(player_str),'html.parser')
-        data_player = player_soup.find_all('td')
-        id_player = str(data_player[0])[str(data_player[0]).find('id_jugador=')+11:
-            str(data_player[0]).find('">',str(data_player[0]).find('id_jugador=')+11)] 
-        name = str(data_player[0])[str(data_player[0]).find(id_player + '">')+2+len(id_player):
-            str(data_player[0]).find('</a>')]
-        id_date_buy = str(data_player[1])[str(data_player[1]).find('none;">')+7:str(data_player[1]).find('</div>')]
-        date_buy = date_translation(str(data_player[1])[str(data_player[1]).find('</div>')+6:str(data_player[1]).find('</td>')])
-        age = str(data_player[2])[str(data_player[2]).find('">')+2:str(data_player[2]).find('</td>')]
-        avg = str(data_player[3])[str(data_player[3]).find('">')+2:str(data_player[3]).find('</td>')]
-        pos = str(data_player[4])[str(data_player[4]).find('">')+2:str(data_player[4]).find('</td>')]
-        salary = str(data_player[5])[str(data_player[5]).find('">')+2:str(data_player[5]).find(' €')]
-        price = str(data_player[6])[str(data_player[6]).find('">')+2:str(data_player[6]).find(' €')]
-        type_buy = str(data_player[7])[str(data_player[7]).find('">')+2:str(data_player[7]).find('</td>')]
+        for player_str in players_str:
+            player_soup = BeautifulSoup(str(player_str),'html.parser')
+            data_player = player_soup.find_all('td')
+            id_player = str(data_player[0])[str(data_player[0]).find('id_jugador=')+11:
+                str(data_player[0]).find('">',str(data_player[0]).find('id_jugador=')+11)] 
+            name = str(data_player[0])[str(data_player[0]).find(id_player + '">')+2+len(id_player):
+                str(data_player[0]).find('</a>')]
+            id_date_buy = str(data_player[1])[str(data_player[1]).find('none;">')+7:str(data_player[1]).find('</div>')]
+            date_buy = date_translation(str(data_player[1])[str(data_player[1]).find('</div>')+6:str(data_player[1]).find('</td>')])
+            age = str(data_player[2])[str(data_player[2]).find('">')+2:str(data_player[2]).find('</td>')]
+            avg = str(data_player[3])[str(data_player[3]).find('">')+2:str(data_player[3]).find('</td>')]
+            pos = str(data_player[4])[str(data_player[4]).find('">')+2:str(data_player[4]).find('</td>')]
+            salary = str(data_player[5])[str(data_player[5]).find('">')+2:str(data_player[5]).find(' €')]
+            price = str(data_player[6])[str(data_player[6]).find('">')+2:str(data_player[6]).find(' €')]
+            type_buy = str(data_player[7])[str(data_player[7]).find('">')+2:str(data_player[7]).find('</td>')]
 
-        # print('\nId: '+ id_player + ' Jugador: ' + name+ ' ' + pos +  ' de ' + age + ' años, con ' + avg + ' de media')
-        # print('Vendido en ' + type_buy + ' por ' + price + '€, cobrando ' + salary + '€ en la fecha '+ date_buy +'\n')
-        
-        transactions.append(
-            Transaction(
-                id_player, 
-                id_date_buy, 
-                age, 
-                avg, 
-                pos, 
-                price, 
-                type_buy, 
-                salary, 
-                date_buy
+            # print('\nId: '+ id_player + ' Jugador: ' + name+ ' ' + pos +  ' de ' + age + ' años, con ' + avg + ' de media')
+            # print('Vendido en ' + type_buy + ' por ' + price + '€, cobrando ' + salary + '€ en la fecha '+ date_buy +'\n')
+            
+            transactions.append(
+                Transaction(
+                    id_player, 
+                    id_date_buy, 
+                    age, 
+                    avg, 
+                    pos, 
+                    price, 
+                    type_buy, 
+                    salary, 
+                    date_buy
+                )
             )
-        )
     return transactions
 
 
