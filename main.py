@@ -375,6 +375,7 @@ while True:
     print("[4] Obtener Cantera (Division 4)")
     print("[5] Obtener Plantilla (Division 4)")
     print("[6] Obtener transacciones")
+    print("[A] Realizar todo")
     print("\n[0] Salir del programa\n")
     opcion = input("Introduce una opción: > ")
 
@@ -394,6 +395,14 @@ while True:
         option_five()
     
     elif opcion == "6":
+        option_six()
+
+    elif opcion == "A":
+        option_one()
+        option_two()
+        option_three()
+        option_four()
+        option_five()
         option_six()
 
     elif opcion == "0":
