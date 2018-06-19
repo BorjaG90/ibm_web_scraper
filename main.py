@@ -10,7 +10,7 @@ import requests
 from pymongo import MongoClient
 from enum import Enum
 from requests.auth import HTTPBasicAuth
-from lxml import html
+#from lxml import html
 
 from transfers.readWebPage import *
 from market.readWebPage import *
@@ -144,7 +144,8 @@ def analyze_juniors_web(division, group):
                 db.juniors.insert_one(j.to_db_collection())
             else:
                 #print("\t-Ya existe-")
-                db.juniors.replace_one({"_id":j._id},j.to_db_collection())
+                db.juniors.delete_one({"_id":j._id})
+                db.juniors.insert_one(j.to_db_collection())
         # for j in juniors:
         #     analyze_player_similars(j._id, False, None)
 
@@ -175,7 +176,8 @@ def analyze_roster_web(division, group):
                 db.seniors.insert_one(p.to_db_collection())
             else:
                 #print("\t-Ya existe-")
-                db.seniors.replace_one({"_id":p._id},p.to_db_collection())
+                db.seniors.delete_one({"_id":p._id})
+                db.seniors.insert_one(p.to_db_collection())
         # for p in roster:
         #     analyze_player_similars(p._id, False, None)
 
@@ -403,7 +405,7 @@ while True:
         option_three()
         option_four()
         option_five()
-        option_six()
+        #option_six()
 
     elif opcion == "0":
         print("Cerrando programa!")
