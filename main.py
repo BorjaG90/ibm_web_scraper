@@ -16,6 +16,8 @@ from transfers.readWebPage import *
 from market.readWebPage import *
 from statistics.readWebPage import *
 from roster.readWebPage import *
+from team.readWebPage import *
+from team.team import *
 
 #--Variables--
 class AVERAGE(Enum):
@@ -181,6 +183,56 @@ def analyze_roster_web(division, group):
         # for p in roster:
         #     analyze_player_similars(p._id, False, None)
 
+def analyze_own_team(id_team):
+    roster_url = url + 'plantilla.php?id_equipo=' + str(id_team)
+    print(' >{ ' + roster_url + ' }')
+    r = session.get(roster_url)
+    load_status=0
+    while load_status!=200:
+        load_status = r.status_code
+    
+    seniors = analyze_roster_senior(r.content)
+    for s in seniors:
+        senior_url = url + 'jugador.php?id_jugador=' + s[0]
+        print('  - Senior ' + s[0] +' :[ ' + senior_url + ' ]')
+
+        r = session.get(senior_url)
+        load_status=0
+        while load_status!=200:
+            load_status = r.status_code
+        attr = analyze_senior_player(r.content, url)
+        player = Senior_Team(
+            s[0],
+            s[1],
+            attr[0],
+            attr[1],
+            attr[2],
+            attr[3],
+            attr[4],
+            attr[5],
+            attr[6],
+            attr[7],
+            attr[8],
+            attr[9],
+            attr[10],
+            attr[11],
+            attr[12],
+            attr[13],
+            attr[14],
+            attr[15],
+            attr[16],
+            attr[17],
+            attr[18],
+            attr[19],
+            attr[20],
+            attr[21]
+            )
+        if(db.team.find({"_id":player._id}).count() == 0):
+            db.team.insert_one(player.to_db_collection())
+        else:
+            #print("\t-Ya existe-")
+            db.team.replace_one({"_id":p._id},player.to_db_collection())
+
 #-----Menu----
 def option_one():
     """Option of web scrap the auctions on the actual market"""
@@ -327,6 +379,13 @@ def option_six():
     for player in examples:
         analyze_player_similars(player['_id'], False, None)
     
+def option_seven():
+    """Option of web scrap the attributes of your own team and juniors""" 
+    #Login
+    login(auth)
+
+    analyze_own_team(14612)
+
 def option_number():
     """Option of web scrap the statistics lines of a game"""
     path = input("Introduce la ruta del fichero html: ")
@@ -377,7 +436,9 @@ while True:
     print("[4] Obtener Cantera (Division 4)")
     print("[5] Obtener Plantilla (Division 4)")
     print("[6] Obtener transacciones")
+    print("[7] Obtener atributos")
     print("[A] Realizar todo")
+    print("[B] Realizar todo sin transacciones")
     print("\n[0] Salir del programa\n")
     opcion = input("Introduce una opción: > ")
 
@@ -399,14 +460,24 @@ while True:
     elif opcion == "6":
         option_six()
 
+    elif opcion == "7":
+        option_seven()
+
     elif opcion == "A":
         option_one()
         option_two()
         option_three()
         option_four()
         option_five()
-        #option_six()
-
+        option_six()
+    
+    elif opcion == "B":
+        option_one()
+        option_two()
+        option_three()
+        option_four()
+        option_five()
+        
     elif opcion == "0":
         print("Cerrando programa!")
         os.system('cls')
