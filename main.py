@@ -190,7 +190,7 @@ def analyze_own_team(id_team):
     load_status=0
     while load_status!=200:
         load_status = r.status_code
-    
+    print("[Seniors]")
     seniors = analyze_roster_senior(r.content)
     for s in seniors:
         senior_url = url + 'jugador.php?id_jugador=' + s[0]
@@ -231,7 +231,56 @@ def analyze_own_team(id_team):
             db.team.insert_one(player.to_db_collection())
         else:
             #print("\t-Ya existe-")
-            db.team.replace_one({"_id":p._id},player.to_db_collection())
+            db.team.replace_one({"_id":player._id},player.to_db_collection())
+
+    roster_url = url + 'plantilla.php?juveniles=1&id_equipo=' + str(id_team)
+    print(' >{ ' + roster_url + ' }')
+    r = session.get(roster_url)
+    load_status=0
+    while load_status!=200:
+        load_status = r.status_code
+    print("[Juniors]")
+    juniors = analyze_roster_junior(r.content)
+    for s in juniors:
+        junior_url = url + 'jugador.php?id_jugador=' + s[0]
+        print('  - Junior ' + s[0] +' :[ ' + senior_url + ' ]')
+
+        r = session.get(junior_url)
+        load_status=0
+        while load_status!=200:
+            load_status = r.status_code
+        attr = analyze_junior_player(r.content, url)
+        player = Junior_Team(
+            s[0],
+            s[1],
+            attr[0],
+            attr[1],
+            attr[2],
+            attr[3],
+            attr[4],
+            attr[5],
+            attr[6],
+            attr[7],
+            attr[8],
+            attr[9],
+            attr[10],
+            attr[11],
+            attr[12],
+            attr[13],
+            attr[14],
+            attr[15],
+            attr[16],
+            attr[17],
+            attr[18],
+            attr[19],
+            attr[20]
+            )
+        if(db.team.find({"_id":player._id}).count() == 0):
+            db.team.insert_one(player.to_db_collection())
+        else:
+            #print("\t-Ya existe-")
+            db.team.replace_one({"_id":player._id},player.to_db_collection())
+        
 
 #-----Menu----
 def option_one():

@@ -31,6 +31,7 @@ class Senior_Team:
         self.dunk = int(dunk)
         self.fight = int(fight)
         self.motivation = int(motivation)
+        self.type = 'S'
 
     def __str__(self):
         return "Id: {}, {} de {} años y {} de media,por {}€".format(
@@ -67,7 +68,8 @@ class Senior_Team:
         "dribbling":self.dribbling,
         "dunk":self.dunk,
         "fight":self.fight,
-        "motivation":self.motivation
+        "motivation":self.motivation,
+        "type":self.type
         }
 
 class Junior_Team:
@@ -97,6 +99,7 @@ class Junior_Team:
         self.dribbling = int(dribbling)
         self.dunk = int(dunk)
         self.fight = int(fight)
+        self.type = 'J'
 
     def __str__(self):
         return "Id: {}, {} de {} años y {} de media,por €".format(
@@ -133,5 +136,6 @@ class Junior_Team:
         "dribbling":self.dribbling,
         "dunk":self.dunk,
         "fight":self.fight,
-        "motivation":0
+        "motivation":0,
+        "type":self.type
         }
