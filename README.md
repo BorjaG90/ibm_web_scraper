@@ -11,6 +11,8 @@ Install the libraries:
 
 `pip install requests`
 
+`pip install pymongo`
+
 ## Deployment
 ### Built with
 #### Libraries
