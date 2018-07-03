@@ -643,6 +643,7 @@ while True:
     print("[6] Obtener transacciones")
     print("[7] Obtener atributos")
     print("[8] Apuesta automatica por un jugador")
+    print("[9] Renovación automatica por un jugador")
     print("[A] Realizar todo")
     print("[B] Realizar todo sin transacciones")
     print("\n[0] Salir del programa\n")
