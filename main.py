@@ -58,6 +58,8 @@ class TIME(Enum):
 
 url = 'http://es.ibasketmanager.com/'
 
+#--Functions--
+
 def login(payload):
     
     login_url = url + 'loginweb.php'
@@ -117,8 +119,8 @@ def analyze_market_web(params):
         db.market.insert_one(a.to_db_collection())
     
     #Analyze similars
-    for a in aus:
-        analyze_player_similars(a._id, False, None)
+    #for a in aus:
+        #analyze_player_similars(a._id, False, None)
 
 def analyze_juniors_web(division, group):
     standings_url = url + 'liga.php?temporada=' + str(season) + '&division=' + str(division) + '&grupo=' + str(group)
@@ -303,7 +305,7 @@ def option_one():
     print('[Seniors]')
     for p_time in range(2,5):
         params['tiempos'] = p_time
-        for p_avg in range(12,17):
+        for p_avg in range(7,17):
             params['calidad'] = p_avg
             analyze_market_web(params)
     #Junior
@@ -440,6 +442,7 @@ def option_eight():
     """ Option of auto bid in an auction for a player """
     #Login
     login(auth)
+
     play_aut_id = input("Introduce el id del jugador: ")
     bid_url = url + 'ofertapuja.php?acc=nuevo&id_jugador=' + str(play_aut_id)
     #http://es.ibasketmanager.com/ofertapuja.php?acc=nuevo&id_jugador=6345048
@@ -480,11 +483,13 @@ def option_eight():
         login(auth)
 
         bid_up = 5000
-        if(int(fich) < 5000):
+        if(int(max_player)-int(fich) < 5000):
             print("Apuestas a 100")
             bid_up = 100
-
-        for i in range(int(fich),int(max_player),bid_up):
+        elif(int(max_player)-int(fich) < 25000):
+            print("Apuestas a 1000")
+            bid_up = 1000
+        for i in range(int(fich),int(max_player)+1,bid_up):
 
             print(" Bid: [" + str(i) + "€]")
 
@@ -502,7 +507,7 @@ def option_eight():
             # print(str(soup))
             # print('#########')
             final = soup.find("td",{"class":"formerror"})
-            print(final.find(text=True, recursive=False))
+            #print(final.find(text=True, recursive=False))
             if(final==None):
                 print("La apuesta es buena")
                 print(final.find(text=True, recursive=False))
@@ -510,6 +515,81 @@ def option_eight():
         print("Fin de bucle")
     else:
         print("No puedes pujar por este jugador")
+
+def option_nine():
+    """ Option of auto renove for a player """
+    #Login
+    login(auth)
+    
+    play_aut_id = input("Introduce el id del jugador: ")
+    bid_url = url + 'ofertarenovar.php?acc=nuevo&tipo=4&id_jugador=' + str(play_aut_id)
+    #http://es.ibasketmanager.com/ofertarenovar.php?acc=nuevo&tipo=4&id_jugador=7895726
+    print(' >{ ' + bid_url + ' }')
+    r = session.get(bid_url)
+    load_status=0
+    while load_status!=200:
+        load_status = r.status_code
+    #make_bid(r.content,play_aut_id,auth)
+
+    ###########################################################
+    soup = BeautifulSoup(r.content, 'html.parser')
+    #print(soup)
+    final = soup.find_all("div",{"class":"selector2"})[0].attrs['valor']
+    print(final)
+    if(final!=None): #I can bid
+        fich = soup.find_all("div",{"class":"selector2"})[0].attrs['valor']
+        ano = soup.find("span",{"id":"ano"}).find(text=True, recursive=False)
+        print("Ficha: " + str(fich))
+        print("Años: " + str(ano))
+
+        min_player = input("Introduzca Ficha máxima para el Jugador: ")
+        max_player = input("Introduzca Ficha máxima para el Jugador: ")
+        years = input("Introduzca Años de Contrato: ")
+
+        par = {
+        "acc":"ofrecer",
+        "tipo":"4",
+        "id_jugador":str(play_aut_id),
+        "clausula":str(0),
+        "clausulamax":str(0),
+        "ficha":str(max_player),
+        "anos":str(years)
+        }
+        login(auth)
+
+        bid_up = 5000
+        if(int(max_player)-int(min_player) < 5000):
+            print("Apuestas a 100")
+            bid_up = 100
+        elif(int(max_player)-int(min_player) < 25000):
+            print("Apuestas a 1000")
+            bid_up = 1000
+        for i in range(int(min_player),int(max_player)+1,bid_up):
+
+            print(" Bid: [" + str(i) + "€]")
+
+            x_url = "http://es.ibasketmanager.com/ofertarenovar.php?acc=" + par['acc']
+            x_url = x_url + "&tipo=" + par['tipo'] + "&id_jugador=" + par['id_jugador']
+            x_url = x_url + "&clausula=" + par['clausula'] + "&clausulamax=" + par['clausulamax']
+            x_url = x_url + "&ficha=" + str(i) + "&anos=" + par['anos']
+            print(x_url)
+            r = session.post(x_url)
+            load_status=0
+            while load_status!=200:
+                load_status = r.status_code
+            soup=BeautifulSoup(r.content, 'html.parser')
+            # print('#########')
+            # print(str(soup))
+            # print('#########')
+            final = soup.find("td",{"class":"formerror"})
+            #print(final.find(text=True, recursive=False))
+            if(final==None):
+                print("La apuesta es buena")
+                print(final.find(text=True, recursive=False))
+                i=int(max_player+1)
+        print("Fin de bucle")
+    else:
+        print("No puedes renovar este jugador")
 
 def option_number():
     """Option of web scrap the statistics lines of a game"""
@@ -591,6 +671,9 @@ while True:
 
     elif opcion == "8":
         option_eight()
+    
+    elif opcion == "9":
+        option_nine()
 
     elif opcion == "A":
         option_one()

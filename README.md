@@ -3,7 +3,11 @@ Web Scraper written in Phyton3 for the web game [International Basketball Manage
 
 ## Prerequisites
 Need an account for the game
+
+Need Python 3 and access to a MongoDB database
+
 ## Installing
+
 
 Install the libraries:
 
