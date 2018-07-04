@@ -468,6 +468,7 @@ def option_eight():
         print("Años: " + str(ano))
 
         max_team = input("Introduzca Puja máxima para el Equipo: ")
+        min_player = input("Introduzca Ficha minima para el Jugador: ")
         max_player = input("Introduzca Ficha máxima para el Jugador: ")
         years = input("Introduzca Años de Contrato: ")
 
@@ -483,13 +484,13 @@ def option_eight():
         login(auth)
 
         bid_up = 5000
-        if(int(max_player)-int(fich) < 5000):
+        if(int(max_player)-int(min_player) < 5000):
             print("Apuestas a 100")
             bid_up = 100
-        elif(int(max_player)-int(fich) < 25000):
+        elif(int(max_player)-int(min_player) < 25000):
             print("Apuestas a 1000")
             bid_up = 1000
-        for i in range(int(fich),int(max_player)+1,bid_up):
+        for i in range(int(min_player),int(max_player)+1,bid_up):
 
             print(" Bid: [" + str(i) + "€]")
 
@@ -507,11 +508,13 @@ def option_eight():
             # print(str(soup))
             # print('#########')
             final = soup.find("td",{"class":"formerror"})
-            #print(final.find(text=True, recursive=False))
+            #
             if(final==None):
                 print("La apuesta es buena")
+                #print(final.find(text=True, recursive=False))
+                i=int(max_player)+1
+            else:
                 print(final.find(text=True, recursive=False))
-                i=int(max_player+1)
         print("Fin de bucle")
     else:
         print("No puedes pujar por este jugador")
@@ -542,7 +545,7 @@ def option_nine():
         print("Ficha: " + str(fich))
         print("Años: " + str(ano))
 
-        min_player = input("Introduzca Ficha máxima para el Jugador: ")
+        min_player = input("Introduzca Ficha minima para el Jugador: ")
         max_player = input("Introduzca Ficha máxima para el Jugador: ")
         years = input("Introduzca Años de Contrato: ")
 
