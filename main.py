@@ -322,14 +322,13 @@ def option_two():
     """Option of web scrap juniors from teams"""
     #Login
     login(auth)
-
+    db.juniors.delete_many({})
     #Analyze divisions
     ## 1st division
     division = 1
     group = 1
     print('\t\t{Division 1}')
     analyze_juniors_web(division, group)
-
     ## 2nd division
     login(auth)
     division = 2
@@ -512,7 +511,10 @@ def option_eight():
             if(final==None):
                 print("La apuesta es buena")
                 #print(final.find(text=True, recursive=False))
-                i=int(max_player)+1
+                i=int(max_player)+2
+                break
+            elif(final=="El jugador pide más años de contrato."):
+                break
             else:
                 print(final.find(text=True, recursive=False))
         print("Fin de bucle")
@@ -575,7 +577,7 @@ def option_nine():
             x_url = x_url + "&tipo=" + par['tipo'] + "&id_jugador=" + par['id_jugador']
             x_url = x_url + "&clausula=" + par['clausula'] + "&clausulamax=" + par['clausulamax']
             x_url = x_url + "&ficha=" + str(i) + "&anos=" + par['anos']
-            print(x_url)
+            #print(x_url)
             r = session.post(x_url)
             load_status=0
             while load_status!=200:
@@ -585,14 +587,22 @@ def option_nine():
             # print(str(soup))
             # print('#########')
             final = soup.find("td",{"class":"formerror"})
-            #print(final.find(text=True, recursive=False))
+            print(final.find(text=True, recursive=False))
             if(final==None):
                 print("La apuesta es buena")
-                print(final.find(text=True, recursive=False))
-                i=int(max_player+1)
+                #print(final.find(text=True, recursive=False))
+                i=int(max_player+2)
+                break
+            elif(final=="El jugador pide más años de contrato."):
+                break
         print("Fin de bucle")
     else:
         print("No puedes renovar este jugador")
+
+def option_ten():
+    """Option of automate catering or Shop """
+    
+
 
 def option_number():
     """Option of web scrap the statistics lines of a game"""
@@ -647,6 +657,7 @@ while True:
     print("[7] Obtener atributos")
     print("[8] Apuesta automatica por un jugador")
     print("[9] Renovación automatica por un jugador")
+    print("[10] Automatizar Catering")
     print("[A] Realizar todo")
     print("[B] Realizar todo sin transacciones")
     print("\n[0] Salir del programa\n")
@@ -678,6 +689,9 @@ while True:
     
     elif opcion == "9":
         option_nine()
+
+    elif opcion == "10":
+        option_ten();
 
     elif opcion == "A":
         option_one()
