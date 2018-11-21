@@ -8,7 +8,6 @@ Need Python 3 and access to a MongoDB database
 
 ## Installing
 
-
 Install the libraries:
 
 `pip install beautifulsoup4`
@@ -19,6 +18,8 @@ Install the libraries:
 
 ## Deployment
 ### Built with
+<a href="https://www.python.org/"><img src="https://raw.githubusercontent.com/BorjaG90/media/master/img/logos/python.png" width=50 alt="Python3"></a>
+
 #### Libraries
 * [BeautifulSoup4](https://www.crummy.com/software/BeautifulSoup/)
 * [Requests](http://docs.python-requests.org/en/master/)
