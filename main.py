@@ -19,6 +19,7 @@ from statistics.readWebPage import *
 from roster.readWebPage import *
 from team.readWebPage import *
 from team.team import *
+from shop.getStock import *
 
 #--Variables--
 class AVERAGE(Enum):
@@ -601,7 +602,17 @@ def option_nine():
 
 def option_ten():
     """Option of automate catering or Shop """
+    #Login
+    login(auth)
     
+    shop_url = url + 'tienda.php'
+    #http://es.ibasketmanager.com/tienda.php
+    print(' >{ ' + shop_url + ' }')
+    r = session.get(shop_url)
+    load_status=0
+    while load_status!=200:
+        load_status = r.status_code
+    analyze_shop(r.content,auth)
 
 
 def option_number():
