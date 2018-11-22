@@ -12,7 +12,7 @@ def analyze_shop(html_content):
   soup = BeautifulSoup(html_content, 'html.parser')
   table_stock = soup.find('div', {"class": "tienda_stats_tables"}) #Llaveros
   tds = table_stock.find_all('td')
-  print(table_stock)
+  #print(table_stock)
   llaveros = {
     "stock":int(str(tds[1])[str(tds[1]).find('<td>')+4:str(tds[1]).find('</td>')].replace(',',''))#,
     #"ayer":int(str(tds[7])[str(tds[7]).find('<td>')+4:str(tds[7]).find('</td>')].replace(',','')),

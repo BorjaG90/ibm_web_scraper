@@ -614,14 +614,12 @@ def option_ten():
         load_status = r.status_code
     shop_stock = analyze_shop(r.content)
     #print(shop_stock)
-    url = "http://es.ibasketmanager.com/inicio.php?accion=/tienda.php?acc=produce&cantidad=100&tipo=" + str(automate_test(r.content,auth,shop_stock))
-    print(url)
-    r = session.post(url)
+    post_url = "http://es.ibasketmanager.com/tienda.php?acc=produce&cantidad=100&tipo=" + str(automate_test(r.content,auth,shop_stock))
+    print(post_url)
+    r = session.post(post_url)
     load_status=0
     while load_status!=200:
         load_status = r.status_code
-
-
 
 
 def option_number():
